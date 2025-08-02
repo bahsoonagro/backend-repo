@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
-const stockSchema = new mongoose.Schema({
-  item: { type: String, required: true },
-  quantity: { type: Number, required: true },
-  category: String,
-  unit: String,
-  supplier: String,
-  dateReceived: { type: Date, default: Date.now },
+const [form, setForm] = useState({
+  item: '',
+  quantity: '',
+  category: '',
+  unit: '',
+  supplier: ''
 });
+
 
 module.exports = mongoose.model('Stock', stockSchema);
 
