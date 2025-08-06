@@ -52,7 +52,6 @@ module.exports = router;
 
 // routes/stockRoutes.js
 
-const express = require('express');
 const router = express.Router();
 const Stock = require('../models/Stock');
 
