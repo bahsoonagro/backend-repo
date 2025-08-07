@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const RawMaterial = require('../models/RawMaterial');
+app.use('/api', rawMaterialRoutes); // 👈 this ensures /api/raw-materials works
 
 // POST single record
 router.post('/raw-materials', async (req, res) => {
