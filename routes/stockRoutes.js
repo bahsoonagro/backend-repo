@@ -1,104 +1,51 @@
 const express = require('express');
 const router = express.Router();
-const StockItem = require('../models/StockItem');
+const Stock = require('../models/Stock');  // adjust path if needed
 
-// CREATE a new stock item
-router.post('/', async (req, res) => {
-  try {
-    const newItem = await StockItem.create(req.body);
-    res.status(201).json(newItem);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// READ all stock items
+// GET all stocks
 router.get('/', async (req, res) => {
   try {
-    const items = await StockItem.find();
-    res.json(items);
+    const stocks = await Stock.find();
+    res.json(stocks);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: 'Failed to fetch stocks', error: err.message });
   }
 });
 
-// UPDATE a stock item by ID
-router.put('/:id', async (req, res) => {
-  try {
-    const updatedItem = await StockItem.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!updatedItem) return res.status(404).json({ error: 'Item not found' });
-    res.json(updatedItem);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// DELETE a stock item by ID
-router.delete('/:id', async (req, res) => {
-  try {
-    const deleted = await StockItem.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Item not found' });
-    res.json({ message: 'Item deleted' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-module.exports = router;
-
-// routes/stockRoutes.js
-
-const router = express.Router();
-const Stock = require('../models/Stock');
-
-// CREATE a new stock item
+// POST create a new stock
 router.post('/', async (req, res) => {
   try {
-    const newItem = new Stock(req.body);
-    await newItem.save();
-    res.status(201).json(newItem);
+    const newStock = new Stock(req.body);
+    const saved = await newStock.save();
+    res.status(201).json(saved);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: 'Failed to create stock', error: err.message });
   }
 });
 
-// READ all stock items
-router.get('/', async (req, res) => {
-  try {
-    const items = await Stock.find().sort({ dateAdded: -1 });
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// UPDATE a stock item by ID
+// PUT update a stock by ID
 router.put('/:id', async (req, res) => {
   try {
-    const updatedItem = await Stock.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!updatedItem) return res.status(404).json({ error: 'Item not found' });
-    res.json(updatedItem);
+    const updatedStock = await Stock.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedStock) {
+      return res.status(404).json({ message: 'Stock not found' });
+    }
+    res.json(updatedStock);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: 'Failed to update stock', error: err.message });
   }
 });
 
-// DELETE a stock item by ID
+// DELETE a stock by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Stock.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Item not found' });
-    res.json({ message: 'Item deleted' });
+    const deletedStock = await Stock.findByIdAndDelete(req.params.id);
+    if (!deletedStock) {
+      return res.status(404).json({ message: 'Stock not found' });
+    }
+    res.json({ message: 'Stock deleted successfully' });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: 'Failed to delete stock', error: err.message });
   }
 });
 
