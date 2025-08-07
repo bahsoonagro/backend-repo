@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/stocks', stockRoutes);
+app.use('/api/stock-items', stockItemRoutes);
+app.use('/api/raw-materials', rawMaterialRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
