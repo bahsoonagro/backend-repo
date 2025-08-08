@@ -2,28 +2,24 @@ const express = require('express');
 const router = express.Router();
 const StockItem = require('../models/StockItem');
 
-// Seed sample item (optional — for dev only)
-router.post('/seed', async (req, res) => {
-  try {
-    const item = await StockItem.create({
-      name: 'Sugar',
-      quantity: 100,
-      category: 'raw material',
-      unitPrice: 3.5
-    });
-    res.status(201).json(item);
-  } catch (err) {
-    res.status(500).json({ message: 'Error seeding item', error: err.message });
-  }
-});
-
-// Get all items
+// GET all stock items
 router.get('/', async (req, res) => {
   try {
     const items = await StockItem.find();
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching items', error: err.message });
+    res.status(200).json(items);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stock items.' });
+  }
+});
+
+// POST new stock item
+router.post('/', async (req, res) => {
+  try {
+    const newItem = new StockItem(req.body);
+    const savedItem = await newItem.save();
+    res.status(201).json(savedItem);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to create stock item.' });
   }
 });
 
