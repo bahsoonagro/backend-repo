@@ -1,37 +1,14 @@
-// models/Stock.js
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const stockSchema = new mongoose.Schema({
-  item: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  category: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  unit: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  supplier: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  dateAdded: {
+  itemName: String,
+  quantity: Number,
+  location: String,
+  date: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   }
 });
 
-module.exports = mongoose.model('Stock', stockSchema);
+const Stock = mongoose.model('Stock', stockSchema);
+export default Stock;
