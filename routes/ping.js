@@ -1,9 +1,0 @@
-// routes/ping.js
-const express = require('express');
-const router = express.Router();
-
-router.get('/ping', (req, res) => {
-  res.json({ message: 'pong 🏓 from BFC backend' });
-});
-
-module.exports = router;
