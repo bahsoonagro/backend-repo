@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const pingRoute = require('./routes/ping'); // Add this line
 
 const Stock = require('./models/Stock');
 const StockItem = require('./models/StockItem');
@@ -12,9 +13,8 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/stocks', stockRoutes);
-app.use('/api/stock-items', stockItemRoutes);
-app.use('/api/raw-materials', rawMaterialRoutes);
+app.use('/api', pingRoute); // Add this line
+
 
 // 🧠 Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
