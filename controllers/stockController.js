@@ -1,20 +1,39 @@
-// routes/stockRoutes.js
-import express from 'express';
-import {
-  getAllStocks,
-  createStock,
-  deleteStock
-} from '../controllers/stockController.js';
+// controllers/stockController.js
+import Stock from '../models/Stock.js';
 
-const router = express.Router();
+export const getAllStocks = async (req, res) => {
+  try {
+    const stocks = await Stock.find();
+    res.json(stocks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-// GET all stocks
-router.get('/', getAllStocks);
+export const createStock = async (req, res) => {
+  try {
+    const stock = new Stock(req.body);
+    const newStock = await stock.save();
+    res.status(201).json(newStock);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
-// POST create new stock
-router.post('/', createStock);
+export const updateStock = async (req, res) => {
+  try {
+    const updated = await Stock.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
-// DELETE stock by ID
-router.delete('/:id', deleteStock);
-
-export default router;
+export const deleteStock = async (req, res) => {
+  try {
+    await Stock.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Stock deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
