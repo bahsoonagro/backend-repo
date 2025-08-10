@@ -1,13 +1,9 @@
-// models/Stock.js
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const stockSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    location: { type: String },
-    capacity: { type: Number },
-  },
-  { timestamps: true }
-);
+const stockSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  quantity: { type: Number, required: true },
+  location: { type: String, required: true }
+}, { timestamps: true });
 
-export default mongoose.model('Stock', stockSchema);
+export default mongoose.model("Stock", stockSchema);
