@@ -1,17 +1,9 @@
-// routes/rawMaterialRoutes.js
-import express from 'express';
-import {
-  getAllRawMaterials,
-  createRawMaterial,
-  updateRawMaterial,
-  deleteRawMaterial
-} from '../controllers/rawMaterialController.js';
+import express from "express";
+import { getAllRawMaterials, createRawMaterial } from "../controllers/rawMaterialController.js";
 
 const router = express.Router();
 
-router.get('/', getAllRawMaterials);
-router.post('/', createRawMaterial);
-router.put('/:id', updateRawMaterial);
-router.delete('/:id', deleteRawMaterial);
+router.get("/", getAllRawMaterials);
+router.post("/", createRawMaterial);
 
 export default router;

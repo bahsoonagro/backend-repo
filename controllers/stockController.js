@@ -1,5 +1,4 @@
-// controllers/stockController.js
-import Stock from '../models/Stock.js';
+import Stock from "../models/Stock.js";
 
 export const getAllStocks = async (req, res) => {
   try {
@@ -20,19 +19,10 @@ export const createStock = async (req, res) => {
   }
 };
 
-export const updateStock = async (req, res) => {
-  try {
-    const updated = await Stock.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
 export const deleteStock = async (req, res) => {
   try {
     await Stock.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Stock deleted' });
+    res.json({ message: "Stock deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
