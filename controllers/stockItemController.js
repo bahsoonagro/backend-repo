@@ -1,14 +1,3 @@
-// controllers/stockItemController.js
-import StockItem from '../models/StockItem.js';
-
-export const getAllStockItems = async (req, res) => {
-  try {
-    const items = await StockItem.find();
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 import StockItem from "../models/StockItem.js";
 
 export const getAllStockItems = async (req, res) => {
