@@ -1,3 +1,4 @@
+// routes/stockRoutes.js
 import express from 'express';
 import {
   getAllStocks,
