@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
 
 const stockItemSchema = new mongoose.Schema({
-  stockId: { type: mongoose.Schema.Types.ObjectId, ref: "Stock", required: true },
-  batchNumber: { type: String, required: true },
-  expiryDate: { type: Date }
-}, { timestamps: true });
+  name: { type: String, required: true },
+  quantity: { type: Number, required: true },
+  category: { type: String, enum: ["raw material", "finished product"], required: true },
+  unitPrice: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
 
-export default mongoose.model("StockItem", stockItemSchema);
+const StockItem = mongoose.model("StockItem", stockItemSchema);
+export default StockItem;

@@ -7,7 +7,9 @@ const rawMaterialSchema = new mongoose.Schema({
   supervisor: { type: String, required: true },
   location: { type: String, required: true },
   weightKg: { type: Number, required: true },
-  damaged: { type: String, enum: ["Yes", "No"], default: "No" }
-}, { timestamps: true });
+  damaged: { type: String, enum: ["Yes", "No"], default: "No" },
+  createdAt: { type: Date, default: Date.now }
+});
 
-export default mongoose.model("RawMaterial", rawMaterialSchema);
+const RawMaterial = mongoose.model("RawMaterial", rawMaterialSchema);
+export default RawMaterial;

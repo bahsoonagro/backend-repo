@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const stockSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  quantity: { type: Number, required: true },
-  location: { type: String, required: true }
-}, { timestamps: true });
+  items: [{ type: mongoose.Schema.Types.ObjectId, ref: "StockItem" }],
+  createdAt: { type: Date, default: Date.now }
+});
 
-export default mongoose.model("Stock", stockSchema);
+const Stock = mongoose.model("Stock", stockSchema);
+export default Stock;
