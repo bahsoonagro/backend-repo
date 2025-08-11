@@ -8,6 +8,14 @@ import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 dotenv.config();
 const app = express();
 
+// Allow requests only from your frontend URL
+const corsOptions = {
+  origin: 'https://frontend-repo1.onrender.com',  // your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
