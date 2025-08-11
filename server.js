@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 
 dotenv.config();
@@ -10,6 +9,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("✅ BFC Backend is running. Try /api/ping");
+});
 
 // Mount raw material routes under /api/raw-materials
 app.use("/api/raw-materials", rawMaterialRoutes);
