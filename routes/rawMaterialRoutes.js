@@ -1,14 +1,9 @@
 import express from "express";
-import {
-  getAllRawMaterials,
-  createRawMaterial,
-  bulkUploadRawMaterials
-} from "../controllers/rawMaterialController.js";
+import { addRawMaterial, bulkUploadRawMaterials } from "../controllers/rawMaterialController.js";
 
 const router = express.Router();
 
-router.get("/", getAllRawMaterials);
-router.post("/", createRawMaterial);
+router.post("/", addRawMaterial);
 router.post("/bulk-upload", bulkUploadRawMaterials);
 
 export default router;

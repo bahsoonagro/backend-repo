@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import stockRoutes from "./routes/stockRoutes.js";
-import stockItemRoutes from "./routes/stockItemRoutes.js";
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 
 dotenv.config();
@@ -13,16 +11,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/stocks", stockRoutes);
-app.use("/api/stock-items", stockItemRoutes);
+// Mount raw material routes under /api/raw-materials
 app.use("/api/raw-materials", rawMaterialRoutes);
 
+// Simple ping route to test backend is live
 app.get("/api/ping", (req, res) => {
   res.json({ message: "pong 🏓 from BFC backend" });
 });
 
-// MongoDB connect
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch(err => console.error(err));
