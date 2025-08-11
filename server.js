@@ -13,10 +13,10 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("✅ BFC Backend is running. Try /api/ping");
 });
-app.use("/api/finished-products", finishedProductRoutes);
 
 // Mount raw material routes under /api/raw-materials
 app.use("/api/raw-materials", rawMaterialRoutes);
+app.use("/api/finished-products", finishedProductRoutes);
 
 // Simple ping route to test backend is live
 app.get("/api/ping", (req, res) => {
