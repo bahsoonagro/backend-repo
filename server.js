@@ -6,6 +6,7 @@ import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
 import dispatchDeliveryRoutes from "./routes/dispatchDeliveryRoutes.js";
+import stockRoutes from "./routes/stockRoutes.js";
 
 
 dotenv.config();
@@ -18,6 +19,7 @@ const corsOptions = {
   credentials: true
 };
 
+app.use(express.json());
 app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
@@ -30,6 +32,7 @@ app.use("/api/finished-products", finishedProductRoutes);
 app.use("/api/stock-movements", stockMovementRoutes);
 app.use("/api/stock-movements", stockMovementRoutes);
 app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
+app.use("/api/stocks", stockRoutes);
 
 // Simple ping route to test backend is live
 app.get("/api/ping", (req, res) => {
