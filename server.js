@@ -8,6 +8,7 @@ import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
 import dispatchDeliveryRoutes from "./routes/dispatchDeliveryRoutes.js";
 import stockRoutes from "./routes/stockRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
 
@@ -42,6 +43,8 @@ mongoose.connect(process.env.MONGO_URI)
     app.use("/api/stock-movements", stockMovementRoutes);
     app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
     app.use("/api/stocks", stockRoutes);
+    app.use("/api/reports", reportRoutes);
+
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,3 +1,4 @@
+// models/Stock.js
 import mongoose from "mongoose";
 
 const stockSchema = new mongoose.Schema(
@@ -7,6 +8,8 @@ const stockSchema = new mongoose.Schema(
     category: { type: String, required: true },
     unitPrice: { type: Number, required: true, min: 0 },
     supplier: { type: String, default: "" },
+    // optional reorder threshold (if provided by your app)
+    reorderLevel: { type: Number, default: 10 },
   },
   { timestamps: true }
 );
