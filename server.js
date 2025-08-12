@@ -6,7 +6,6 @@ import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
 
-app.use("/api/stock-movements", stockMovementRoutes);
 
 dotenv.config();
 const app = express();
@@ -27,6 +26,7 @@ app.get("/", (req, res) => {
 // Mount raw material routes under /api/raw-materials
 app.use("/api/raw-materials", rawMaterialRoutes);
 app.use("/api/finished-products", finishedProductRoutes);
+app.use("/api/stock-movements", stockMovementRoutes);
 app.use("/api/stock-movements", stockMovementRoutes);
 
 // Simple ping route to test backend is live
