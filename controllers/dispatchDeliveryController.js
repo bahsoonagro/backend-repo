@@ -1,4 +1,3 @@
-// controllers/dispatchDeliveryController.js
 import DispatchDelivery from "../models/DispatchDelivery.js";
 
 export async function getDispatches(req, res) {

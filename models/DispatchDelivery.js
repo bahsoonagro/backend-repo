@@ -1,4 +1,3 @@
-// models/DispatchDelivery.js
 import mongoose from "mongoose";
 
 const dispatchDeliverySchema = new mongoose.Schema({
@@ -11,5 +10,4 @@ const dispatchDeliverySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const DispatchDelivery = mongoose.model("DispatchDelivery", dispatchDeliverySchema);
-
 export default DispatchDelivery;

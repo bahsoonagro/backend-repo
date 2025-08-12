@@ -1,4 +1,3 @@
-// routes/dispatchDeliveryRoutes.js
 import express from "express";
 import { getDispatches, createDispatch } from "../controllers/dispatchDeliveryController.js";
 
