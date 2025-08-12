@@ -1,5 +1,19 @@
+<<<<<<< HEAD
 import express from "express";
+import { getStockMovements, createStockMovement } from "../controllers/stockMovementController.js";
+=======
+import express from "express";
+>>>>>>> 871edf1769b4a1a3b5cc00283e2fbe5ac8c2b3a7
 
+<<<<<<< HEAD
+const router = express.Router();
+
+router.get("/", getStockMovements);
+router.post("/", createStockMovement);
+
+export default router;
+
+=======
 const router = express.Router();
 
 // Example GET route - fetch all stock movements
@@ -38,3 +52,5 @@ router.post("/", async (req, res) => {
 });
 
 export default router;
+
+>>>>>>> 871edf1769b4a1a3b5cc00283e2fbe5ac8c2b3a7
