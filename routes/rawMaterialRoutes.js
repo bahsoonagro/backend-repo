@@ -6,6 +6,8 @@ const router = express.Router();
 router.post("/", addRawMaterial);
 router.post("/bulk-upload", bulkUploadRawMaterials);
 
+const rawMaterialsController = require('../controllers/rawMaterialsController');
+
 // ----------------- LPO Routes -----------------
 router.get('/lpo', rawMaterialsController.getLPOs);       // Get all LPOs
 router.post('/lpo', rawMaterialsController.addLPO);      // Add new LPO
