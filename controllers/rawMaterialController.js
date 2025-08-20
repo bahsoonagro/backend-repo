@@ -26,3 +26,43 @@ export async function bulkUploadRawMaterials(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
+// ----------------- LPO Data -----------------
+// Temporary in-memory storage; replace with DB logic if needed
+let lpos = [];
+
+// GET all LPOs
+exports.getLPOs = (req, res) => {
+  res.json(lpos);
+};
+
+// POST add new LPO
+exports.addLPO = (req, res) => {
+  const { material, year, quantity, unitPrice, payment, supplier, comments } = req.body;
+
+  if (!material || !quantity || !unitPrice || !supplier) {
+    return res.status(400).send('Missing required fields for LPO');
+  }
+
+  const newLPO = {
+    id: Date.now(), // or use your DB-generated ID
+    material,
+    year,
+    quantity,
+    unitPrice,
+    payment,
+    supplier,
+    comments
+  };
+
+  lpos.push(newLPO);
+  res.status(201).json(newLPO);
+};
+
+// DELETE LPO
+exports.deleteLPO = (req, res) => {
+  const id = Number(req.params.id);
+  lpos = lpos.filter(l => l.id !== id);
+  res.sendStatus(204);
+};
+
