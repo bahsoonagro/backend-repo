@@ -27,42 +27,50 @@ export async function bulkUploadRawMaterials(req, res) {
   }
 }
 
-// ----------------- LPO Data -----------------
-// Temporary in-memory storage; replace with DB logic if needed
-let lpos = [];
+const LPO = require('../models/LPO');
 
 // GET all LPOs
-exports.getLPOs = (req, res) => {
-  res.json(lpos);
+exports.getLPOs = async (req, res) => {
+  try {
+    const lpos = await LPO.find().sort({ createdAt: -1 });
+    res.json(lpos);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch LPOs', error: err.message });
+  }
 };
 
 // POST add new LPO
-exports.addLPO = (req, res) => {
-  const { material, year, quantity, unitPrice, payment, supplier, comments } = req.body;
+exports.addLPO = async (req, res) => {
+  try {
+    const { material, year, quantity, unitPrice, payment, supplier, comments } = req.body;
 
-  if (!material || !quantity || !unitPrice || !supplier) {
-    return res.status(400).send('Missing required fields for LPO');
+    if (!material || !quantity || !unitPrice || !supplier) {
+      return res.status(400).json({ message: 'Missing required fields for LPO' });
+    }
+
+    const newLPO = await LPO.create({
+      material,
+      year,
+      quantity,
+      unitPrice,
+      payment,
+      supplier,
+      comments
+    });
+
+    res.status(201).json(newLPO);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to add LPO', error: err.message });
   }
-
-  const newLPO = {
-    id: Date.now(), // or use your DB-generated ID
-    material,
-    year,
-    quantity,
-    unitPrice,
-    payment,
-    supplier,
-    comments
-  };
-
-  lpos.push(newLPO);
-  res.status(201).json(newLPO);
 };
 
-// DELETE LPO
-exports.deleteLPO = (req, res) => {
-  const id = Number(req.params.id);
-  lpos = lpos.filter(l => l.id !== id);
-  res.sendStatus(204);
+// DELETE LPO by ID
+exports.deleteLPO = async (req, res) => {
+  try {
+    await LPO.findByIdAndDelete(req.params.id);
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete LPO', error: err.message });
+  }
 };
 
