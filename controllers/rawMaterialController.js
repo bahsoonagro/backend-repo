@@ -1,4 +1,7 @@
 import RawMaterial from "../models/RawMaterial.js";
+import LPO from "../models/LPO.js";
+
+// ----------------- RAW MATERIAL -----------------
 
 // Add a single raw material entry
 export async function addRawMaterial(req, res) {
@@ -27,20 +30,20 @@ export async function bulkUploadRawMaterials(req, res) {
   }
 }
 
-const LPO = require('../models/LPO');
+// ----------------- LPO -----------------
 
-// GET all LPOs
-exports.getLPOs = async (req, res) => {
+// Get all LPOs
+export async function getLPOs(req, res) {
   try {
     const lpos = await LPO.find().sort({ createdAt: -1 });
     res.json(lpos);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch LPOs', error: err.message });
   }
-};
+}
 
-// POST add new LPO
-exports.addLPO = async (req, res) => {
+// Add a new LPO
+export async function addLPO(req, res) {
   try {
     const { material, year, quantity, unitPrice, payment, supplier, comments } = req.body;
 
@@ -62,15 +65,14 @@ exports.addLPO = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to add LPO', error: err.message });
   }
-};
+}
 
-// DELETE LPO by ID
-exports.deleteLPO = async (req, res) => {
+// Delete LPO by ID
+export async function deleteLPO(req, res) {
   try {
     await LPO.findByIdAndDelete(req.params.id);
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete LPO', error: err.message });
   }
-};
-
+}
