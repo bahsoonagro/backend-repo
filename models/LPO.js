@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const lpoSchema = new mongoose.Schema({
   material: { type: String, required: true },
@@ -10,4 +10,5 @@ const lpoSchema = new mongoose.Schema({
   comments: { type: String, default: '' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('LPO', lpoSchema);
+const LPO = mongoose.model('LPO', lpoSchema);
+export default LPO;
