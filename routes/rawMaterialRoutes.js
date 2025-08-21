@@ -5,7 +5,7 @@ import {
   getLPOs, 
   addLPO, 
   deleteLPO 
-} from "../controllers/rawMaterialsController.js";
+} from "../controllers/rawMaterialController.js";
 
 const router = express.Router();
 
