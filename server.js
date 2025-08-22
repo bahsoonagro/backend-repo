@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
+// Import your route modules
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
@@ -14,39 +15,32 @@ dotenv.config();
 
 const app = express();
 
-// Allow multiple origins including your local dev server
+// Define allowed origins
 const allowedOrigins = [
-  "https://frontend-repo1.onrender.com", // production frontend
-  "http://localhost:3001",
-  "http://localhost:3002",                // your dev port
+  "https://frontend-repo1.onrender.com", // Production frontend
+  "http://localhost:3001",               // Local dev 1
+  "http://localhost:3002",               // Local dev 2
 ];
 
-
+// CORS options
 const corsOptions = {
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // allow non-browser requests (e.g., Postman)
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      const msg = `CORS policy does not allow access from: ${origin}`;
       return callback(new Error(msg), false);
     }
     return callback(null, true);
   },
-  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-// Enable CORS for all routes
+// Enable CORS
 app.use(cors(corsOptions));
 
-// Parse JSON
+// Parse JSON bodies
 app.use(express.json());
 
 // Test routes
@@ -58,12 +52,13 @@ app.get("/api/ping", (req, res) => {
   res.json({ message: "pong 🏓 from BFC backend" });
 });
 
-// Connect to MongoDB first
-mongoose.connect(process.env.MONGO_URI)
+// Connect to MongoDB and start server
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Mount API routes AFTER DB connection
+    // Mount API routes after DB connection
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
@@ -74,7 +69,7 @@ mongoose.connect(process.env.MONGO_URI)
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("❌ MongoDB connection failed:", err);
     process.exit(1);
   });
