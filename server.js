@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-// Import your route modules
+// Import route modules
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
@@ -15,35 +15,30 @@ dotenv.config();
 
 const app = express();
 
-// Define allowed origins
+// CORS configuration
 const allowedOrigins = [
-  "https://frontend-repo1.onrender.com", // Production frontend
-  "http://localhost:3001",               // Local dev 1
-  "http://localhost:3002",               // Local dev 2
+  "http://localhost:3001", // local dev
+  "http://localhost:3002", // React dashboard dev
+  "https://frontend-repo1.onrender.com" // deployed frontend
 ];
 
-// CORS options
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser requests (e.g., Postman)
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `CORS policy does not allow access from: ${origin}`;
-      return callback(new Error(msg), false);
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
     }
-    return callback(null, true);
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// Enable CORS
 app.use(cors(corsOptions));
-
-// Parse JSON bodies
 app.use(express.json());
 
-// Test routes
+// Test endpoint
 app.get("/", (req, res) => {
   res.send("✅ BFC Backend is running. Try /api/ping");
 });
@@ -52,13 +47,12 @@ app.get("/api/ping", (req, res) => {
   res.json({ message: "pong 🏓 from BFC backend" });
 });
 
-// Connect to MongoDB and start server
-mongoose
-  .connect(process.env.MONGO_URI)
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Mount API routes after DB connection
+    // Mount API routes
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
