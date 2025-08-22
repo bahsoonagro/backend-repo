@@ -20,6 +20,8 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
+  'http://localhost:3001',               // local dev
+
 };
 
 // Enable CORS for all routes
