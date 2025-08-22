@@ -29,6 +29,15 @@ export async function bulkUploadRawMaterials(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+// GET all raw materials
+export async function getAllRawMaterials(req, res) {
+  try {
+    const materials = await RawMaterial.find().sort({ createdAt: -1 });
+    res.json(materials);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch raw materials", error: err.message });
+  }
+}
 
 // ----------------- LPO -----------------
 
