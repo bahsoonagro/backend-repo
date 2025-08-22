@@ -15,13 +15,24 @@ dotenv.config();
 const app = express();
 
 // CORS options
+const allowedOrigins = [
+  'https://frontend-repo1.onrender.com', // production frontend
+  'http://localhost:3001',               // local dev
+];
+
 const corsOptions = {
-  origin: 'https://frontend-repo1.onrender.com', // frontend URL
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: Origin ${origin} not allowed`));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
-  'http://localhost:3001',               // local dev
-
 };
 
 // Enable CORS for all routes
