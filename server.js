@@ -19,7 +19,7 @@ const allowedOrigins = [
   "http://localhost:3001", // local frontend old
   "http://localhost:3002", // local frontend new
   "https://frontend-repo1.onrender.com",// deployed frontend
-  credentials: true
+  credentials:true
 ];
 
 // CORS options
