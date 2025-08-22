@@ -14,30 +14,35 @@ dotenv.config();
 
 const app = express();
 
+// CORS options
 const corsOptions = {
-  origin: 'https://frontend-repo1.onrender.com', // confirm this URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'https://frontend-repo1.onrender.com', // frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+// Enable CORS for all routes
 app.use(cors(corsOptions));
+
+// Parse JSON
 app.use(express.json());
 
+// Test routes
 app.get("/", (req, res) => {
   res.send("✅ BFC Backend is running. Try /api/ping");
 });
 
-// Simple ping route to test backend is live
 app.get("/api/ping", (req, res) => {
   res.json({ message: "pong 🏓 from BFC backend" });
 });
 
-// Connect to MongoDB first, then mount routes and start server
+// Connect to MongoDB first
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Mount routes AFTER DB connection
+    // Mount API routes AFTER DB connection
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
@@ -45,11 +50,10 @@ mongoose.connect(process.env.MONGO_URI)
     app.use("/api/stocks", stockRoutes);
     app.use("/api/reports", reportRoutes);
 
-
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
   .catch(err => {
     console.error("❌ MongoDB connection failed:", err);
-    process.exit(1); // exit if DB connection fails
+    process.exit(1);
   });
