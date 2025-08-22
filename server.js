@@ -14,10 +14,11 @@ dotenv.config();
 
 const app = express();
 
-// CORS options
+// Allow multiple origins including your local dev server
 const allowedOrigins = [
-  'https://frontend-repo1.onrender.com', // production frontend
-  'http://localhost:3001',               // local dev
+  "https://frontend-repo1.onrender.com", // production frontend
+  "http://localhost:3001",
+  "http://localhost:3002",                // your dev port
 ];
 
 const corsOptions = {
