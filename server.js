@@ -56,7 +56,7 @@ mongoose.connect(process.env.MONGO_URI)
     // Mount API routes AFTER DB connection
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
-    app.use("/api/stock-movements", stockMovementRoutes);
+    app.use("/api/stockmovements", stockMovementRoutes);
     app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
     app.use("/api/stocks", stockRoutes);
     app.use("/api/reports", reportRoutes);
