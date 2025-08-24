@@ -1,9 +1,7 @@
 import RawMaterial from "../models/RawMaterial.js";
 import LPO from "../models/LPO.js";
 
-// ----------------- RAW MATERIAL -----------------
-
-// Add a single raw material entry
+// --- RAW MATERIAL ---
 export async function addRawMaterial(req, res) {
   try {
     const newRawMaterial = new RawMaterial(req.body);
@@ -14,14 +12,11 @@ export async function addRawMaterial(req, res) {
   }
 }
 
-// Bulk upload raw materials
 export async function bulkUploadRawMaterials(req, res) {
   try {
     const rawMaterials = req.body;
-
-    if (!Array.isArray(rawMaterials) || rawMaterials.length === 0) {
+    if (!Array.isArray(rawMaterials) || rawMaterials.length === 0)
       return res.status(400).json({ message: "Invalid or empty raw materials array" });
-    }
 
     await RawMaterial.insertMany(rawMaterials);
     res.status(201).json({ message: "Bulk upload successful" });
@@ -29,7 +24,7 @@ export async function bulkUploadRawMaterials(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
-// GET all raw materials
+
 export async function getAllRawMaterials(req, res) {
   try {
     const materials = await RawMaterial.find().sort({ createdAt: -1 });
@@ -39,9 +34,7 @@ export async function getAllRawMaterials(req, res) {
   }
 }
 
-// ----------------- LPO -----------------
-
-// Get all LPOs
+// --- LPO ---
 export async function getLPOs(req, res) {
   try {
     const lpos = await LPO.find().sort({ createdAt: -1 });
@@ -51,32 +44,33 @@ export async function getLPOs(req, res) {
   }
 }
 
-// Add a new LPO
 export async function addLPO(req, res) {
   try {
-    const { material, year, quantity, unitPrice, payment, supplier, comments } = req.body;
+    const { year, supplier, payment, comments, items, fuelCost, perDiem, tollFee, miscellaneous } = req.body;
 
-    if (!material || !quantity || !unitPrice || !supplier) {
-      return res.status(400).json({ message: 'Missing required fields for LPO' });
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "LPO must have at least one item" });
     }
 
-    const newLPO = await LPO.create({
-      material,
+    const newLPO = new LPO({
       year,
-      quantity,
-      unitPrice,
-      payment,
       supplier,
-      comments
+      payment,
+      comments,
+      items,
+      fuelCost: fuelCost || 0,
+      perDiem: perDiem || 0,
+      tollFee: tollFee || 0,
+      miscellaneous: miscellaneous || 0
     });
 
+    await newLPO.save();
     res.status(201).json(newLPO);
   } catch (err) {
     res.status(500).json({ message: 'Failed to add LPO', error: err.message });
   }
 }
 
-// Delete LPO by ID
 export async function deleteLPO(req, res) {
   try {
     await LPO.findByIdAndDelete(req.params.id);
