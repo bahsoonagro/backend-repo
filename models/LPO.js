@@ -28,12 +28,10 @@ const lpoSchema = new mongoose.Schema({
 // Auto-calculate item totals + grand total before save
 lpoSchema.pre('save', function (next) {
   if (this.items && this.items.length > 0) {
-    // calculate each item's total
     this.items.forEach(item => {
       item.total = item.quantity * item.unitPrice;
     });
 
-    // calculate grand total (items total + extras)
     const itemsTotal = this.items.reduce((acc, item) => acc + item.total, 0);
     const extras = this.fuelCost + this.perDiem + this.tollFee + this.miscellaneous;
 
@@ -41,9 +39,7 @@ lpoSchema.pre('save', function (next) {
   } else {
     this.total = this.fuelCost + this.perDiem + this.tollFee + this.miscellaneous;
   }
-
   next();
 });
 
-const LPO = mongoose.model('LPO', lpoSchema);
-export default LPO;
+export default mongoose.model('LPO', lpoSchema);
