@@ -1,8 +1,10 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
+// Import routes (make sure all filenames and casing match exactly)
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
@@ -24,7 +26,6 @@ const allowedOrigins = [
 // CORS options
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (like Postman or WebView)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -59,10 +60,10 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Mount API routes AFTER DB connection
+    // Mount API routes
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
-    app.use("/api/stock-movements", stockMovementRoutes); // renamed to kebab-case
+    app.use("/api/stock-movements", stockMovementRoutes);
     app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
     app.use("/api/stocks", stockRoutes);
     app.use("/api/reports", reportRoutes);
