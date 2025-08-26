@@ -10,7 +10,7 @@ import stockMovementRoutes from "./routes/stockMovementRoutes.js";
 import dispatchDeliveryRoutes from "./routes/dispatchDeliveryRoutes.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
+//import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -61,7 +61,7 @@ mongoose.connect(process.env.MONGO_URI)
     console.log("✅ Connected to MongoDB Atlas");
 
     // Mount API routes
-    app.use("/api/auth", authRoutes);
+   // app.use("/api/auth", authRoutes);
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
