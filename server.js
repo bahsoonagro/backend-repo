@@ -10,26 +10,31 @@ import stockMovementRoutes from "./routes/stockMovementRoutes.js";
 import dispatchDeliveryRoutes from "./routes/dispatchDeliveryRoutes.js";
 import stockRoutes from "./routes/stockRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-// CORS configuration
+// Allowed origins
 const allowedOrigins = [
-  "http://localhost:3001",
-  "http://localhost:3002",
-  "https://frontend-repo1.onrender.com"
+  "http://localhost:3001",          // local frontend old
+  "http://localhost:3002",          // local frontend new
+  "https://frontend-repo1.onrender.com" // deployed frontend
 ];
 
+// CORS options
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-    else callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
@@ -42,14 +47,21 @@ app.use((req, res, next) => {
 });
 
 // Test routes
-app.get("/", (req, res) => res.send("✅ BFC Backend is running"));
-app.get("/api/ping", (req, res) => res.json({ message: "pong 🏓 from BFC backend" }));
+app.get("/", (req, res) => {
+  res.send("✅ BFC Backend is running. Try /api/ping");
+});
 
-// Connect to MongoDB and mount routes
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong 🏓 from BFC backend" });
+});
+
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
+    // Mount API routes
+    app.use("/api/auth", authRoutes);
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
