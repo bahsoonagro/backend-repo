@@ -16,15 +16,15 @@ const app = express();
 
 // Allowed origins
 const allowedOrigins = [
-  "http://localhost:3001",          // local frontend old
-  "http://localhost:3002",          // local frontend new
-  "https://frontend-repo1.onrender.com" // deployed frontend
+  "http://localhost:3001",
+  "http://localhost:3002",
+  "https://frontend-repo1.onrender.com"
 ];
 
 // CORS options
 const corsOptions = {
   origin: (origin, callback) => {
-    // allow requests with no origin (like Postman)
+    // allow requests with no origin (like Postman or WebView)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -38,6 +38,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
 
 // Test routes
 app.get("/", (req, res) => {
@@ -56,7 +62,7 @@ mongoose.connect(process.env.MONGO_URI)
     // Mount API routes AFTER DB connection
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
-    app.use("/api/stockmovements", stockMovementRoutes);
+    app.use("/api/stock-movements", stockMovementRoutes); // renamed to kebab-case
     app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
     app.use("/api/stocks", stockRoutes);
     app.use("/api/reports", reportRoutes);
@@ -68,3 +74,9 @@ mongoose.connect(process.env.MONGO_URI)
     console.error("❌ MongoDB connection failed:", err);
     process.exit(1);
   });
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("❌ ERROR:", err.stack);
+  res.status(500).json({ message: err.message || "Internal Server Error" });
+});
