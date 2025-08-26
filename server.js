@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -12,21 +11,20 @@ import stockRoutes from "./routes/stockRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
-
 const app = express();
 
-// ✅ Regex-based CORS origin check
+// --- Flexible CORS Setup ---
+// Allow localhost during dev, and any *.vercel.app domain in production
 const corsOptions = {
   origin: (origin, callback) => {
     if (
-      !origin || // allow mobile apps / curl
-      /^http:\/\/localhost:\d+$/.test(origin) || // any localhost:3000, 5173, etc
-      /\.vercel\.app$/.test(new URL(origin).hostname) // any Vercel frontend
+      !origin || // allow server-to-server requests & Postman
+      /^https:\/\/.*\.vercel\.app$/.test(origin) || // any Vercel subdomain
+      /^http:\/\/localhost(:\d+)?$/.test(origin) // local dev
     ) {
       callback(null, true);
     } else {
-      console.log("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
     }
   },
   credentials: true,
@@ -37,40 +35,28 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Logging
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
+// --- Routes ---
+app.use("/api/raw-materials", rawMaterialRoutes);
+app.use("/api/finished-products", finishedProductRoutes);
+app.use("/api/stock-movements", stockMovementRoutes);
+app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
+app.use("/api/stocks", stockRoutes);
+app.use("/api/reports", reportRoutes);
+
+// --- Root check ---
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
 });
 
-// Test routes
-app.get("/", (req, res) => res.send("✅ Backend running!"));
-app.get("/api/ping", (req, res) => res.json({ message: "pong 🏓" }));
-
-// MongoDB
+// --- MongoDB Connection ---
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
-
-    // Mount routes
-    app.use("/api/raw-materials", rawMaterialRoutes);
-    app.use("/api/finished-products", finishedProductRoutes);
-    app.use("/api/stock-movements", stockMovementRoutes);
-    app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
-    app.use("/api/stocks", stockRoutes);
-    app.use("/api/reports", reportRoutes);
-
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err);
-    process.exit(1);
-  });
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error("❌ ERROR:", err.stack);
-  res.status(500).json({ message: err.message || "Internal Server Error" });
-});
+// --- Start Server ---
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
