@@ -1,8 +1,8 @@
 {
   "name": "bfc-stock-backend",
   "version": "1.0.0",
-  "main": "server.js",
   "type": "module",
+  "main": "server.js",
   "engines": {
     "node": ">=22.0.0"
   },
