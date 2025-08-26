@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-// Import routes (make sure all filenames and casing match exactly)
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
@@ -16,25 +15,21 @@ dotenv.config();
 
 const app = express();
 
-// Allowed origins
+// CORS configuration
 const allowedOrigins = [
   "http://localhost:3001",
   "http://localhost:3002",
   "https://frontend-repo1.onrender.com"
 ];
 
-// CORS options
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS policy: origin ${origin} not allowed`));
-    }
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error(`CORS policy: origin ${origin} not allowed`));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 app.use(cors(corsOptions));
@@ -47,20 +42,14 @@ app.use((req, res, next) => {
 });
 
 // Test routes
-app.get("/", (req, res) => {
-  res.send("✅ BFC Backend is running. Try /api/ping");
-});
+app.get("/", (req, res) => res.send("✅ BFC Backend is running"));
+app.get("/api/ping", (req, res) => res.json({ message: "pong 🏓 from BFC backend" }));
 
-app.get("/api/ping", (req, res) => {
-  res.json({ message: "pong 🏓 from BFC backend" });
-});
-
-// Connect to MongoDB
+// Connect to MongoDB and mount routes
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Mount API routes
     app.use("/api/raw-materials", rawMaterialRoutes);
     app.use("/api/finished-products", finishedProductRoutes);
     app.use("/api/stock-movements", stockMovementRoutes);
