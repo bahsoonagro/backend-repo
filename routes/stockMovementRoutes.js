@@ -1,85 +1,120 @@
+// routes/stockMovementRoutes.js
 import express from "express";
 import StockMovement from "../models/StockMovement.js";
-import Inventory from "../models/Inventory.js"; // Make sure you have this
+import Inventory from "../models/Inventory.js"; // Make sure Inventory model exists
 
 const router = express.Router();
 
-// Get all stock movements
+// --------------------------
+// GET all stock movements
+// --------------------------
 router.get("/", async (req, res) => {
   try {
     const movements = await StockMovement.find().sort({ dateTime: -1 });
     res.json(movements);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch stock movements." });
   }
 });
 
-// Add a stock movement + update inventory
+// --------------------------
+// POST a new stock movement
+// --------------------------
 router.post("/", async (req, res) => {
   try {
-    const { productName, batchNumber, movementType, quantity } = req.body;
+    const {
+      requisitionNo,
+      dateTime,
+      rawMaterial,
+      batchNumber,
+      quantityBags,
+      weightRemovedKg,
+      weightReceivedKg,
+      storeman,
+      cleaningReceiver,
+      remarks,
+      updateInventory = false, // optional flag from frontend
+    } = req.body;
 
-    // 1. Save Stock Movement
-    const movement = new StockMovement(req.body);
+    // 1️⃣ Save stock movement
+    const movement = new StockMovement({
+      requisitionNo,
+      dateTime,
+      rawMaterial,
+      batchNumber,
+      quantityBags: Number(quantityBags),
+      weightRemovedKg: Number(weightRemovedKg),
+      weightReceivedKg: Number(weightReceivedKg),
+      storeman,
+      cleaningReceiver,
+      notes: remarks || "",
+    });
+
     await movement.save();
 
-    // 2. Find existing inventory record
-    let inventory = await Inventory.findOne({ productName, batchNumber });
+    // 2️⃣ Optional inventory update
+    let inventory = null;
+    if (updateInventory) {
+      inventory = await Inventory.findOne({ productName: rawMaterial, batchNumber });
+      if (!inventory) {
+        inventory = new Inventory({ productName: rawMaterial, batchNumber });
+      }
 
-    if (!inventory) {
-      inventory = new Inventory({ productName, batchNumber });
+      inventory.stockIn += Number(weightReceivedKg || 0);
+      inventory.stockOut += Number(weightRemovedKg || 0);
+      inventory.totalProduced += Number(quantityBags || 0);
+      inventory.availableStock = inventory.stockIn - inventory.stockOut;
+      inventory.lastUpdated = new Date();
+
+      await inventory.save();
     }
-
-    // 3. Update inventory fields
-    if (movementType === "stock-in") {
-      inventory.stockIn += quantity;
-      inventory.totalProduced += quantity;
-    } else if (movementType === "stock-out") {
-      inventory.stockOut += quantity;
-    } else if (movementType === "damaged") {
-      inventory.damages += quantity;
-    }
-
-    // Auto calculate available stock
-    inventory.availableStock = inventory.stockIn - inventory.stockOut - inventory.damages;
-    inventory.lastUpdated = new Date();
-
-    await inventory.save();
 
     res.status(201).json({ movement, inventory });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to save stock movement." });
   }
 });
 
-// Update a stock movement
+// --------------------------
+// PUT update a stock movement
+// --------------------------
 router.put("/:id", async (req, res) => {
   try {
     const updatedMovement = await StockMovement.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        ...req.body,
+        notes: req.body.remarks || req.body.notes,
+      },
       { new: true }
     );
 
     if (!updatedMovement) {
-      return res.status(404).json({ message: "Stock movement not found" });
+      return res.status(404).json({ message: "Stock movement not found." });
     }
+
     res.json(updatedMovement);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to update stock movement." });
   }
 });
 
-// Delete a stock movement
+// --------------------------
+// DELETE a stock movement
+// --------------------------
 router.delete("/:id", async (req, res) => {
   try {
     const deletedMovement = await StockMovement.findByIdAndDelete(req.params.id);
     if (!deletedMovement) {
-      return res.status(404).json({ message: "Stock movement not found" });
+      return res.status(404).json({ message: "Stock movement not found." });
     }
-    res.json({ message: "Stock movement deleted successfully" });
+    res.json({ message: "Stock movement deleted successfully." });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete stock movement." });
   }
 });
 
