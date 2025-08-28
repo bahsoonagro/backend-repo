@@ -3,85 +3,150 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-// Import routes
-import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
-import finishedProductRoutes from "./routes/finishedProductRoutes.js";
-import stockMovementRoutes from "./routes/stockMovementRoutes.js";
-import dispatchDeliveryRoutes from "./routes/dispatchDeliveryRoutes.js";
-import stockRoutes from "./routes/stockRoutes.js";
-import reportRoutes from "./routes/reportRoutes.js";
+// Import your models
+import RawMaterial from "./models/RawMaterial.js";
+import FinishedProduct from "./models/FinishedProduct.js";
+import StockMovement from "./models/StockMovement.js";
+import DispatchDelivery from "./models/DispatchDelivery.js";
+import Stock from "./models/Stock.js";
+import Report from "./models/Report.js";
 
 dotenv.config();
-const app = express();
 
-// --- CORS Setup ---
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// -------------------- CORS Setup --------------------
 const allowedOrigins = [
-  "https://frontend-repo-topaz.vercel.app", // your deployed frontend
-  "http://localhost:3000", // local dev frontend
-  "http://localhost:3001",
-  "http://localhost:3002"
+  "https://frontend-repo-topaz.vercel.app",
+  "http://localhost:3000",
 ];
 
-const corsOptions = {
-  origin: (origin, callback) => {
+app.use(cors({
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.error("Blocked by CORS:", origin);
-      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      callback(new Error("CORS blocked for origin: " + origin));
     }
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
+}));
+
 app.use(express.json());
 
-// --- Test Root & Ping ---
-app.get("/", (req, res) => res.send("✅ BFC Backend running"));
-app.get("/api/ping", (req, res) => res.json({ message: "pong 🏓" }));
+// -------------------- Database --------------------
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("MongoDB connected"))
+.catch((err) => console.error("MongoDB connection error:", err));
 
-// --- Temporary fallback routes (dummy data) ---
-// So frontend works even if MongoDB is down
-app.get("/api/raw-materials", (req, res) => {
-  res.json([
-    { _id: "1", name: "Flour", quantity: 100, unit: "kg" },
-    { _id: "2", name: "Sugar", quantity: 50, unit: "kg" }
-  ]);
+// -------------------- Routes --------------------
+
+// Ping route
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong" });
 });
 
-app.get("/api/finished-products", (req, res) => {
-  res.json([
-    { _id: "1", name: "Bread", quantity: 200, unit: "pcs" },
-    { _id: "2", name: "Cake", quantity: 80, unit: "pcs" }
-  ]);
+// Raw Materials
+app.get("/api/raw-materials", async (req, res) => {
+  try {
+    const items = await RawMaterial.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+app.post("/api/raw-materials", async (req, res) => {
+  try {
+    const newItem = new RawMaterial(req.body);
+    await newItem.save();
+    res.status(201).json(newItem);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-app.get("/api/stock-movements", (req, res) => {
-  res.json([{ _id: "1", product: "Flour", type: "IN", qty: 50 }]);
+// Finished Products
+app.get("/api/finished-products", async (req, res) => {
+  try {
+    const items = await FinishedProduct.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+app.post("/api/finished-products", async (req, res) => {
+  try {
+    const newItem = new FinishedProduct(req.body);
+    await newItem.save();
+    res.status(201).json(newItem);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-app.get("/api/dispatch-delivery", (req, res) => {
-  res.json([{ _id: "1", product: "Bread", qty: 100, destination: "Shop A" }]);
+// Stock Movements
+app.get("/api/stock-movements", async (req, res) => {
+  try {
+    const movements = await StockMovement.find();
+    res.json(movements);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+app.post("/api/stock-movements", async (req, res) => {
+  try {
+    const movement = new StockMovement(req.body);
+    await movement.save();
+    res.status(201).json(movement);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-// --- Mount actual routes AFTER DB connection ---
-mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("✅ MongoDB connected");
+// Dispatch & Delivery
+app.get("/api/dispatch-delivery", async (req, res) => {
+  try {
+    const deliveries = await DispatchDelivery.find();
+    res.json(deliveries);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+app.post("/api/dispatch-delivery", async (req, res) => {
+  try {
+    const delivery = new DispatchDelivery(req.body);
+    await delivery.save();
+    res.status(201).json(delivery);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-    // Mount all real API routes
-    app.use("/api/raw-materials", rawMaterialRoutes);
-    app.use("/api/finished-products", finishedProductRoutes);
-    app.use("/api/stock-movements", stockMovementRoutes);
-    app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
-    app.use("/api/stocks", stockRoutes);
-    app.use("/api/reports", reportRoutes);
-  })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// Stocks
+app.get("/api/stocks", async (req, res) => {
+  try {
+    const stocks = await Stock.find();
+    res.json(stocks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-// --- Start Server ---
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Reports example
+app.get("/api/reports/stock-summary", async (req, res) => {
+  try {
+    const report = await Report.find(); // Customize your aggregation as needed
+    res.json(report);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// -------------------- Start Server --------------------
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
