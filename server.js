@@ -9,7 +9,6 @@ import FinishedProduct from "./models/FinishedProduct.js";
 import StockMovement from "./models/StockMovement.js";
 import DispatchDelivery from "./models/DispatchDelivery.js";
 import Stock from "./models/Stock.js";
-import Report from "./models/Report.js";
 
 dotenv.config();
 
