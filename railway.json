@@ -1,0 +1,12 @@
+{
+  "build": {
+    "watch": ["src/", "package.json"]
+  },
+  "deploy": {
+    "env": {
+      "FRONTEND_URL": "https://frontend-repo-production-c3b7.up.railway.app",
+      "MONGO_URI": "mongodb+srv://ahmedbahsoon:zaoco7ZhPQXZeorX@bfcstockmanagement.4qlxxaj.mongodb.net/bfcdb?retryWrites=true&w=majority&appName=bfcstockmanagement",
+      "PORT": "5000"
+    }
+  }
+}
