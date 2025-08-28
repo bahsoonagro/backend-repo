@@ -21,6 +21,7 @@ const corsOptions = {
   origin: (origin, callback) => {
     if (
       !origin || // allow server-to-server requests & Postman
+      https://frontend-repo-topaz.vercel.app
       /^https:\/\/.*\.vercel\.app$/.test(origin) || // any Vercel subdomain
       /^http:\/\/localhost(:\d+)?$/.test(origin) // local dev
     ) {
