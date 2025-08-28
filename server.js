@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-const allowedOrigins = ["https://frontend-repo-topaz.vercel.app"];
-
 import rawMaterialRoutes from "./routes/rawMaterialRoutes.js";
 import finishedProductRoutes from "./routes/finishedProductRoutes.js";
 import stockMovementRoutes from "./routes/stockMovementRoutes.js";
@@ -15,14 +13,13 @@ import reportRoutes from "./routes/reportRoutes.js";
 dotenv.config();
 const app = express();
 
-// --- Flexible CORS Setup ---
-// Allow localhost during dev, and any *.vercel.app domain in production
+// --- CORS Setup ---
 const corsOptions = {
   origin: (origin, callback) => {
     if (
-      !origin || // allow server-to-server requests & Postman
-      https://frontend-repo-topaz.vercel.app
-      /^https:\/\/.*\.vercel\.app$/.test(origin) || // any Vercel subdomain
+      !origin || // allow Postman, server-to-server requests
+      origin === "https://frontend-repo-topaz.vercel.app" || // production frontend
+      /^https:\/\/.*\.vercel\.app$/.test(origin) || // any vercel subdomain
       /^http:\/\/localhost(:\d+)?$/.test(origin) // local dev
     ) {
       callback(null, true);
@@ -38,28 +35,35 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// --- Routes ---
-app.use("/api/raw-materials", rawMaterialRoutes);
-app.use("/api/finished-products", finishedProductRoutes);
-app.use("/api/stock-movements", stockMovementRoutes);
-app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
-app.use("/api/stocks", stockRoutes);
-app.use("/api/reports", reportRoutes);
-
 // --- Root check ---
-app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
+app.get("/", (req, res) => res.send("✅ BFC Backend is running"));
+
+// --- Test endpoint ---
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong 🏓 from BFC backend" });
 });
 
-// --- MongoDB Connection ---
+// --- Connect to MongoDB and mount routes ---
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .then(() => {
+    console.log("✅ MongoDB connected");
 
-// --- Start Server ---
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    // --- API routes ---
+    app.use("/api/raw-materials", rawMaterialRoutes);
+    app.use("/api/finished-products", finishedProductRoutes);
+    app.use("/api/stock-movements", stockMovementRoutes);
+    app.use("/api/dispatch-delivery", dispatchDeliveryRoutes);
+    app.use("/api/stocks", stockRoutes);
+    app.use("/api/reports", reportRoutes);
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch(err => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
