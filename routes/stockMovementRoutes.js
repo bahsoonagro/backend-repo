@@ -1,7 +1,7 @@
 // routes/stockMovementRoutes.js
 import express from "express";
 import StockMovement from "../models/StockMovement.js";
-import Inventory from "../models/Inventory.js"; // Make sure Inventory model exists
+import Inventory from "../models/Inventory.js"; // Ensure Inventory model exists
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
     const movements = await StockMovement.find().sort({ dateTime: -1 });
     res.json(movements);
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching stock movements:", err);
     res.status(500).json({ message: "Failed to fetch stock movements." });
   }
 });
@@ -34,10 +34,10 @@ router.post("/", async (req, res) => {
       storeman,
       cleaningReceiver,
       remarks,
-      updateInventory = false, // optional flag from frontend
+      updateInventory = false,
     } = req.body;
 
-    // 1️⃣ Save stock movement
+    // Save stock movement
     const movement = new StockMovement({
       requisitionNo,
       dateTime,
@@ -50,10 +50,9 @@ router.post("/", async (req, res) => {
       cleaningReceiver,
       notes: remarks || "",
     });
-
     await movement.save();
 
-    // 2️⃣ Optional inventory update
+    // Optional inventory update
     let inventory = null;
     if (updateInventory) {
       inventory = await Inventory.findOne({ productName: rawMaterial, batchNumber });
@@ -72,7 +71,7 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({ movement, inventory });
   } catch (err) {
-    console.error(err);
+    console.error("Error saving stock movement:", err);
     res.status(500).json({ message: "Failed to save stock movement." });
   }
 });
@@ -97,7 +96,7 @@ router.put("/:id", async (req, res) => {
 
     res.json(updatedMovement);
   } catch (err) {
-    console.error(err);
+    console.error("Error updating stock movement:", err);
     res.status(500).json({ message: "Failed to update stock movement." });
   }
 });
@@ -113,7 +112,7 @@ router.delete("/:id", async (req, res) => {
     }
     res.json({ message: "Stock movement deleted successfully." });
   } catch (err) {
-    console.error(err);
+    console.error("Error deleting stock movement:", err);
     res.status(500).json({ message: "Failed to delete stock movement." });
   }
 });
