@@ -20,7 +20,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3001",          // local frontend old
   "http://localhost:3002",          // local frontend new
-  "https://frontend-repo-lcu4.onrender.com" // deployed frontend
+  "https://frontend-rep.onrender.com" // deployed frontend
 ];
 
 // CORS options
