@@ -4,7 +4,7 @@
   },
   "deploy": {
     "env": {
-      "FRONTEND_URL": "https://frontend-repo-production-c3b7.up.railway.app",
+      "FRONTEND_URL": "https://frontend-repo-lcu4.onrender.com",
       "MONGO_URI": "mongodb+srv://ahmedbahsoon:zaoco7ZhPQXZeorX@bfcstockmanagement.4qlxxaj.mongodb.net/bfcdb?retryWrites=true&w=majority&appName=bfcstockmanagement",
       "PORT": "5000"
     }
