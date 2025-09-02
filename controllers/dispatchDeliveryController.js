@@ -1,18 +1,20 @@
-import DispatchDelivery from "../models/DispatchDelivery.js";
-
-export async function getDispatches(req, res) {
-  try {
-    const dispatches = await DispatchDelivery.find().sort({ date: -1 });
-    res.json(dispatches);
-  } catch (error) {
-    console.error("Error fetching dispatch deliveries:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-
 export async function createDispatch(req, res) {
   try {
-    const { item, quantity, date, customer, driver, vehicle } = req.body;
+    const {
+      item,
+      quantity,
+      date,
+      customer,
+      driver,
+      vehicle,
+      tollFee = 0,
+      fuelCost = 0,
+      perDiem = 0,
+      personnel = [],
+      totalCost = 0,
+      remarks = "",
+    } = req.body;
+
     if (!item || !quantity || !date || !customer || !driver || !vehicle) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -24,6 +26,12 @@ export async function createDispatch(req, res) {
       customer,
       driver,
       vehicle,
+      tollFee,
+      fuelCost,
+      perDiem,
+      personnel,
+      totalCost,
+      remarks
     });
 
     await newDispatch.save();
