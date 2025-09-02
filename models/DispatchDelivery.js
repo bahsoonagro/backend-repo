@@ -7,14 +7,11 @@ const dispatchDeliverySchema = new mongoose.Schema({
   customer: { type: String, required: true },
   driver: { type: String, required: true },
   vehicle: { type: String, required: true },
-
-  // Management / cost tracking fields
-  tollGateFees: { type: Number, default: 0 },
+  tollFee: { type: Number, default: 0 },
   fuelCost: { type: Number, default: 0 },
-  driverPerDiem: { type: Number, default: 0 },
-  helperPerDiem: { type: Number, default: 0 },
-  totalCost: { type: Number, default: 0 }, // can also be calculated on save
-  remarks: { type: String, default: "" }
+  perDiem: { type: Number, default: 0 },
+  personnel: { type: [String], default: [] }, // all staff names on the journey
+  totalCost: { type: Number, default: 0 },
 }, { timestamps: true });
 
 const DispatchDelivery = mongoose.model("DispatchDelivery", dispatchDeliverySchema);
