@@ -21,6 +21,7 @@ const allowedOrigins = [
   "http://localhost:3001",          // local frontend old
   "http://localhost:3002",          // local frontend new
   "https://frontend-rep.onrender.com" // deployed frontend
+  "https://www.frontend-rep.onrender.com" //
 ];
 
 // CORS options
