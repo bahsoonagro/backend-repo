@@ -1,106 +1,73 @@
+// routes/dispatchDelivery.routes.js
 import express from "express";
-import DispatchDelivery from "../models/dispatchDelivery.js";
+import DispatchDelivery from "../models/dispatchDelivery.model.js";
 
 const router = express.Router();
 
-// @route   POST /api/dispatch-delivery
-// @desc    Create a new dispatch delivery
-router.post("/", async (req, res) => {
-  try {
-    const {
-      item,
-      quantity,
-      date,
-      customer,
-      driver,
-      vehicle,
-      tollFee,
-      fuelCost,
-      perDiem,
-      personnel,
-    } = req.body;
-
-    // Calculate total cost
-    const totalCost = (tollFee || 0) + (fuelCost || 0) + (perDiem || 0);
-
-    const newDelivery = new DispatchDelivery({
-      item,
-      quantity,
-      date,
-      customer,
-      driver,
-      vehicle,
-      tollFee,
-      fuelCost,
-      perDiem,
-      personnel,
-      totalCost,
-    });
-
-    const savedDelivery = await newDelivery.save();
-    res.status(201).json(savedDelivery);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
-
-// @route   GET /api/dispatch-delivery
-// @desc    Get all dispatch deliveries
+/**
+ * @route   GET /api/dispatch-delivery
+ * @desc    Fetch all dispatch deliveries
+ */
 router.get("/", async (req, res) => {
   try {
-    const deliveries = await DispatchDelivery.find().sort({ createdAt: -1 });
-    res.json(deliveries);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    const dispatches = await DispatchDelivery.find().sort({ createdAt: -1 });
+    res.json(dispatches);
+  } catch (err) {
+    console.error("Error fetching dispatch deliveries:", err);
+    res.status(500).json({ error: "Server error while fetching dispatches" });
   }
 });
 
-// @route   GET /api/dispatch-delivery/:id
-// @desc    Get single delivery by ID
-router.get("/:id", async (req, res) => {
+/**
+ * @route   POST /api/dispatch-delivery
+ * @desc    Create a new dispatch delivery
+ */
+router.post("/", async (req, res) => {
   try {
-    const delivery = await DispatchDelivery.findById(req.params.id);
-    if (!delivery) return res.status(404).json({ message: "Not found" });
-    res.json(delivery);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    const newDispatch = new DispatchDelivery(req.body);
+    const savedDispatch = await newDispatch.save();
+    res.status(201).json(savedDispatch);
+  } catch (err) {
+    console.error("Error creating dispatch:", err);
+    res.status(400).json({ error: "Invalid dispatch data" });
   }
 });
 
-// @route   PUT /api/dispatch-delivery/:id
-// @desc    Update delivery
+/**
+ * @route   PUT /api/dispatch-delivery/:id
+ * @desc    Update a dispatch delivery by ID
+ */
 router.put("/:id", async (req, res) => {
   try {
-    const updatedDelivery = await DispatchDelivery.findByIdAndUpdate(
+    const updatedDispatch = await DispatchDelivery.findByIdAndUpdate(
       req.params.id,
-      {
-        ...req.body,
-        totalCost:
-          (req.body.tollFee || 0) +
-          (req.body.fuelCost || 0) +
-          (req.body.perDiem || 0),
-      },
-      { new: true }
+      req.body,
+      { new: true, runValidators: true }
     );
-    if (!updatedDelivery) return res.status(404).json({ message: "Not found" });
-    res.json(updatedDelivery);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    if (!updatedDispatch) {
+      return res.status(404).json({ error: "Dispatch not found" });
+    }
+    res.json(updatedDispatch);
+  } catch (err) {
+    console.error("Error updating dispatch:", err);
+    res.status(400).json({ error: "Invalid update data" });
   }
 });
 
-// @route   DELETE /api/dispatch-delivery/:id
-// @desc    Delete delivery
+/**
+ * @route   DELETE /api/dispatch-delivery/:id
+ * @desc    Delete a dispatch delivery by ID
+ */
 router.delete("/:id", async (req, res) => {
   try {
-    const deletedDelivery = await DispatchDelivery.findByIdAndDelete(
-      req.params.id
-    );
-    if (!deletedDelivery)
-      return res.status(404).json({ message: "Not found" });
-    res.json({ message: "Deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    const deleted = await DispatchDelivery.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Dispatch not found" });
+    }
+    res.json({ message: "Dispatch deleted successfully", id: req.params.id });
+  } catch (err) {
+    console.error("Error deleting dispatch:", err);
+    res.status(500).json({ error: "Server error while deleting dispatch" });
   }
 });
 
