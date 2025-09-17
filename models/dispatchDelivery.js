@@ -10,8 +10,10 @@ const dispatchDeliverySchema = new mongoose.Schema({
   tollFee: { type: Number, default: 0 },
   fuelCost: { type: Number, default: 0 },
   perDiem: { type: Number, default: 0 },
-  personnel: { type: [String], default: [] }, // all staff names on the journey
+  personnel: { type: [String], default: [] },
   totalCost: { type: Number, default: 0 },
+  remarks: { type: String, default: "" },
+  status: { type: String, enum: ["pending", "in-transit", "delivered"], default: "pending" },
 }, { timestamps: true });
 
 const DispatchDelivery = mongoose.model("DispatchDelivery", dispatchDeliverySchema);
