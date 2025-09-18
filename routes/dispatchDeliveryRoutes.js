@@ -1,6 +1,6 @@
 // routes/dispatchDelivery.routes.js
 import express from "express";
-import DispatchDelivery from "../models/dispatchDelivery.model.js";
+import DispatchDelivery from "../models/dispatchDelivery.js";
 
 const router = express.Router();
 
