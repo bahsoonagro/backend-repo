@@ -3,20 +3,56 @@ import mongoose from "mongoose";
 
 const stockMovementSchema = new mongoose.Schema(
   {
-    type: { type: String, enum: ["IN", "OUT"], required: false },
-    requisitionNo: { type: String },
-    dateTime: { type: Date, default: Date.now },
-    rawMaterial: { type: String },
-    batchNumber: { type: String },
-    quantityBags: { type: Number },
-    weightRemovedKg: { type: Number },
-    weightReceivedKg: { type: Number },
-    storeman: { type: String },
-    cleaningReceiver: { type: String },
-    notes: { type: String }, // maps to "remarks" from frontend
+    type: { 
+      type: String, 
+      enum: ["IN", "OUT"], 
+      required: true, // better to enforce direction
+    },
+    requisitionNo: { 
+      type: String, 
+      trim: true 
+    },
+    dateTime: { 
+      type: Date, 
+      default: Date.now 
+    },
+    rawMaterial: { 
+      type: String, 
+      required: true, 
+      trim: true 
+    },
+    batchNumber: { 
+      type: String, 
+      trim: true 
+    },
+    quantityBags: { 
+      type: Number, 
+      min: 0 
+    },
+    weightRemovedKg: { 
+      type: Number, 
+      min: 0 
+    },
+    weightReceivedKg: { 
+      type: Number, 
+      min: 0 
+    },
+    storeman: { 
+      type: String, 
+      trim: true 
+    },
+    cleaningReceiver: { 
+      type: String, 
+      trim: true 
+    },
+    notes: { 
+      type: String, 
+      trim: true 
+    }, // maps to "remarks" from frontend
   },
-  { timestamps: true }
+  { 
+    timestamps: true 
+  }
 );
 
-const StockMovement = mongoose.model("StockMovement", stockMovementSchema);
-export default StockMovement;
+export default mongoose.model("StockMovement", stockMovementSchema);
