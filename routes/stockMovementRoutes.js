@@ -24,6 +24,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const {
+      type,
       requisitionNo,
       dateTime,
       rawMaterial,
@@ -39,13 +40,14 @@ router.post("/", async (req, res) => {
 
     // Save stock movement
     const movement = new StockMovement({
+      type,
       requisitionNo,
       dateTime,
       rawMaterial,
       batchNumber,
-      quantityBags: Number(quantityBags),
-      weightRemovedKg: Number(weightRemovedKg),
-      weightReceivedKg: Number(weightReceivedKg),
+      quantityBags: Number(quantityBags) || 0,
+      weightRemovedKg: Number(weightRemovedKg) || 0,
+      weightReceivedKg: Number(weightReceivedKg) || 0,
       storeman,
       cleaningReceiver,
       notes: remarks || "",
@@ -60,10 +62,15 @@ router.post("/", async (req, res) => {
         inventory = new Inventory({ productName: rawMaterial, batchNumber });
       }
 
-      inventory.stockIn += Number(weightReceivedKg || 0);
-      inventory.stockOut += Number(weightRemovedKg || 0);
-      inventory.totalProduced += Number(quantityBags || 0);
-      inventory.availableStock = inventory.stockIn - inventory.stockOut;
+      if (type === "IN") {
+        inventory.stockIn += Number(weightReceivedKg) || 0;
+        inventory.totalProduced += Number(quantityBags) || 0;
+      } else if (type === "OUT") {
+        inventory.stockOut += Number(weightRemovedKg) || 0;
+      }
+
+      inventory.availableStock =
+        (inventory.stockIn || 0) - (inventory.stockOut || 0);
       inventory.lastUpdated = new Date();
 
       await inventory.save();
