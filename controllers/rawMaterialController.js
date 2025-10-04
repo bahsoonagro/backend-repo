@@ -21,6 +21,21 @@ export async function getAllRawMaterials(req, res) {
   }
 }
 
+// Update a raw material
+export async function updateRawMaterial(req, res) {
+  try {
+    const updated = await RawMaterial.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true } // Return the updated document
+    );
+    if (!updated) return res.status(404).json({ message: "Raw material not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Update failed", error: err.message });
+  }
+}
+
 // Delete a raw material
 export async function deleteRawMaterial(req, res) {
   try {
@@ -39,8 +54,8 @@ export async function bulkUploadRawMaterials(req, res) {
     if (!Array.isArray(rawMaterials) || rawMaterials.length === 0)
       return res.status(400).json({ message: "Invalid or empty array" });
 
-    await RawMaterial.insertMany(rawMaterials);
-    res.status(201).json({ message: "Bulk upload successful" });
+    const inserted = await RawMaterial.insertMany(rawMaterials);
+    res.status(201).json(inserted);
   } catch (err) {
     res.status(500).json({ message: "Bulk upload failed", error: err.message });
   }
