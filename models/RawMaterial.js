@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const rawMaterialSchema = new mongoose.Schema({
   date: { type: Date, required: true },
-  openingBal: { type: Number, required: true, default: 0 },
+  openingQty: { type: Number, required: true, default: 0 },
   newStock: { type: Number, required: true, default: 0 },
   totalStock: { type: Number, required: true, default: 0 },
   stockOut: { type: Number, required: true, default: 0 },
